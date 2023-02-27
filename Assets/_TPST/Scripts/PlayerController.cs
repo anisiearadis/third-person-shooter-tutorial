@@ -23,7 +23,6 @@ namespace TPST
         [SerializeField] private float minClamp = -30f;
         [SerializeField] private float maxClamp = 70f;
         [SerializeField] private float cameraRotationSmoothTime = 0.12f;
-        [SerializeField] private float cameraDistance = 5f;
 
         private Transform _cameraTransform;
         private CharacterController _controller;
