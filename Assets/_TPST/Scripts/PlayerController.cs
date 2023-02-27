@@ -88,14 +88,15 @@ namespace TPST
             if (!_input.IsMoving) return;
 
             // Rotation
-            float targetRotation = Mathf.Atan2(
-                _input.MoveInput.x,
-                _input.MoveInput.y
-            ) * Mathf.Rad2Deg + _cameraTransform.eulerAngles.y;
+            Quaternion targetRotation = Quaternion.Euler(
+                0f,
+                Mathf.Atan2(_input.MoveInput.x, _input.MoveInput.y) * Mathf.Rad2Deg + _cameraTransform.eulerAngles.y,
+                0f
+            );
 
             transform.eulerAngles = Vector3.up * Mathf.SmoothDampAngle(
                 transform.eulerAngles.y,
-                targetRotation,
+                targetRotation.eulerAngles.y,
                 ref _currentPlayerRotationVelocity,
                 playerRotationSmoothTime
             );
