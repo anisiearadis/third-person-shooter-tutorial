@@ -111,13 +111,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 3
   movementStateType: 0
-  playerRotationSmoothTime: 0.12
+  playerRotationSmoothTime: 0.05
+  cameraTarget: {fileID: 438265214778997404}
   sensitivity: 1
   minClamp: -30
   maxClamp: 70
-  cameraTarget: {fileID: 438265214778997404}
-  cameraRotationSmoothTime: 0.12
-  cameraDistance: 5
+  cameraTargetRotationSmoothTime: 0.05
 --- !u!1 &6671097272999224211
 GameObject:
   m_ObjectHideFlags: 0

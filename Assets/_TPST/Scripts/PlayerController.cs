@@ -15,14 +15,14 @@ namespace TPST
 
         [Header("Player Rotation")]
         [SerializeField] private MovementStateType movementStateType = MovementStateType.TargetingMovement;
-        [SerializeField] private float playerRotationSmoothTime = 0.12f;
+        [SerializeField] private float playerRotationSmoothTime = 0.05f;
 
         [Header("Camera Rotation")]
         [SerializeField] private Transform cameraTarget;
         [SerializeField] private float sensitivity = 1f;
         [SerializeField] private float minClamp = -30f;
         [SerializeField] private float maxClamp = 70f;
-        [SerializeField] private float cameraRotationSmoothTime = 0.12f;
+        [SerializeField] private float cameraTargetRotationSmoothTime = 0.05f;
 
         private Transform _cameraTransform;
         private CharacterController _controller;
@@ -33,9 +33,9 @@ namespace TPST
         private float _currentSpeed;
         private float _speedVelocity;
 
-        private Vector2 _currentRotation;
-        private Vector3 _targetRotation;
-        private Vector3 _currentCameraRotationVelocity;
+        private Vector2 _currentCameraTargetRotation;
+        private Vector3 _cameraTargetRotation;
+        private Vector3 _currentCameraTargetRotationVelocity;
 
         private void Awake()
         {
@@ -109,18 +109,18 @@ namespace TPST
 
         private void CameraRotationUpdate()
         {
-            _currentRotation.y += _input.LookInput.x * sensitivity;
-            _currentRotation.x -= _input.LookInput.y * sensitivity;
-            _currentRotation.x = Mathf.Clamp(_currentRotation.x, minClamp, maxClamp);
+            _currentCameraTargetRotation.y += _input.LookInput.x * sensitivity;
+            _currentCameraTargetRotation.x -= _input.LookInput.y * sensitivity;
+            _currentCameraTargetRotation.x = Mathf.Clamp(_currentCameraTargetRotation.x, minClamp, maxClamp);
 
-            _targetRotation = Vector3.SmoothDamp(
-                _targetRotation,
-                _currentRotation,
-                ref _currentCameraRotationVelocity,
-                cameraRotationSmoothTime
+            _cameraTargetRotation = Vector3.SmoothDamp(
+                _cameraTargetRotation,
+                _currentCameraTargetRotation,
+                ref _currentCameraTargetRotationVelocity,
+                cameraTargetRotationSmoothTime
             );
 
-            cameraTarget.transform.eulerAngles = _targetRotation;
+            cameraTarget.transform.eulerAngles = _cameraTargetRotation;
         }
     }
 }
