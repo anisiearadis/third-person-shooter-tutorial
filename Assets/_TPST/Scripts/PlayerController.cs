@@ -18,10 +18,10 @@ namespace TPST
         [SerializeField] private float playerRotationSmoothTime = 0.12f;
 
         [Header("Camera Rotation")]
+        [SerializeField] private Transform cameraTarget;
         [SerializeField] private float sensitivity = 1f;
         [SerializeField] private float minClamp = -30f;
         [SerializeField] private float maxClamp = 70f;
-        [SerializeField] private Transform cameraTarget;
         [SerializeField] private float cameraRotationSmoothTime = 0.12f;
         [SerializeField] private float cameraDistance = 5f;
 
@@ -104,7 +104,7 @@ namespace TPST
             // Movement
             float targetSpeed = _input.MoveInput.magnitude * moveSpeed;
             _currentSpeed = Mathf.SmoothDamp(_currentSpeed, targetSpeed, ref _speedVelocity, 0.1f);
-            
+
             _controller.Move(transform.forward * (_currentSpeed * Time.deltaTime));
         }
 
@@ -120,9 +120,8 @@ namespace TPST
                 ref _currentCameraRotationVelocity,
                 cameraRotationSmoothTime
             );
-            
-            _cameraTransform.transform.eulerAngles = _targetRotation;
-            _cameraTransform.position = cameraTarget.transform.position - _cameraTransform.forward * cameraDistance;
+
+            cameraTarget.transform.eulerAngles = _targetRotation;
         }
     }
 }
