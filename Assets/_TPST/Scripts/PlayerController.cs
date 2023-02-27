@@ -2,12 +2,19 @@ using UnityEngine;
 
 namespace TPST
 {
+    public enum MovementStateType
+    {
+        TargetingMovement,
+        FreeLookMovement,
+    }
+
     public class PlayerController : MonoBehaviour
     {
         [Header("Player Movement")]
         [SerializeField] private float moveSpeed;
 
         [Header("Player Rotation")]
+        [SerializeField] private MovementStateType movementStateType = MovementStateType.TargetingMovement;
         [SerializeField] private float playerRotationSmoothTime = 0.12f;
 
         [Header("Camera Rotation")]
@@ -40,8 +47,15 @@ namespace TPST
 
         private void Update()
         {
-            PlayerRotationUpdate();
-            PlayerMovementUpdate();
+            if (movementStateType == MovementStateType.TargetingMovement)
+            {
+                TargetingMovementUpdate();
+            }
+
+            if (movementStateType == MovementStateType.FreeLookMovement)
+            {
+                FreeLookMovementUpdate();
+            }
         }
 
         private void LateUpdate()
@@ -49,25 +63,45 @@ namespace TPST
             CameraRotationUpdate();
         }
 
-        private void PlayerRotationUpdate()
+        private void TargetingMovementUpdate()
         {
             if (!_input.IsMoving) return;
 
-            float rotation = Mathf.Atan2(
+            // Rotation
+            Quaternion targetRotation = Quaternion.LookRotation(_cameraTransform.forward);
+
+            transform.eulerAngles = Vector3.up * Mathf.SmoothDampAngle(
+                transform.eulerAngles.y,
+                targetRotation.eulerAngles.y,
+                ref _currentPlayerRotationVelocity,
+                playerRotationSmoothTime
+            );
+
+            // Movement
+            Vector3 movement = _cameraTransform.right * _input.MoveInput.x + _cameraTransform.forward * _input.MoveInput.y;
+            movement.y = 0;
+
+            _controller.Move(movement * (moveSpeed * Time.deltaTime));
+        }
+
+        private void FreeLookMovementUpdate()
+        {
+            if (!_input.IsMoving) return;
+
+            // Rotation
+            float targetRotation = Mathf.Atan2(
                 _input.MoveInput.x,
                 _input.MoveInput.y
             ) * Mathf.Rad2Deg + _cameraTransform.eulerAngles.y;
 
             transform.eulerAngles = Vector3.up * Mathf.SmoothDampAngle(
                 transform.eulerAngles.y,
-                rotation,
+                targetRotation,
                 ref _currentPlayerRotationVelocity,
                 playerRotationSmoothTime
             );
-        }
 
-        private void PlayerMovementUpdate()
-        {
+            // Movement
             float targetSpeed = _input.MoveInput.magnitude * moveSpeed;
             _currentSpeed = Mathf.SmoothDamp(_currentSpeed, targetSpeed, ref _speedVelocity, 0.1f);
             
@@ -78,7 +112,6 @@ namespace TPST
         {
             _currentRotation.y += _input.LookInput.x * sensitivity;
             _currentRotation.x -= _input.LookInput.y * sensitivity;
-
             _currentRotation.x = Mathf.Clamp(_currentRotation.x, minClamp, maxClamp);
 
             _targetRotation = Vector3.SmoothDamp(
@@ -87,8 +120,8 @@ namespace TPST
                 ref _currentCameraRotationVelocity,
                 cameraRotationSmoothTime
             );
+            
             _cameraTransform.transform.eulerAngles = _targetRotation;
-
             _cameraTransform.position = cameraTarget.transform.position - _cameraTransform.forward * cameraDistance;
         }
     }
